@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Chat</title>
+</head>
+<body>
+    <h1>OpenAI Chat</h1>
+    <form action="/generate" method="post">
+        <label for="prompt">Enter your prompt:</label><br>
+        <textarea id="prompt" name="prompt" rows="4" cols="50"></textarea><br>
+        <input type="submit" value="Submit">
+    </form>
+    {% if prompt %}
+        <h2>Your prompt:</h2>
+        <p>{{ prompt }}</p>
+    {% endif %}
+    {% if output %}
+        <h2>Response:</h2>
+        <p>{{ output }}</p>
+    {% endif %}
+</body>
+</html>
