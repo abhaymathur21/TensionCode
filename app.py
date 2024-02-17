@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import getpass
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
+import re
 
 if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = "AIzaSyDbzDwrQ3gi3kM-gA8XpmdXQWpRDG_xtEc"
@@ -63,9 +64,41 @@ def generate_code():
     ]
     print(prompt)
     result = llm.invoke(prompt)
-    print(result.content)
+    generated_code = result.content
+    print(generated_code)
     
-    return result.content
+    autogen_code = autogen(generated_code)
+    
+    return jsonify({"generated_code": generated_code, "autogen_code":autogen_code})
+
+def autogen(result_content):
+    from autogen import config_list_from_json, UserProxyAgent, AssistantAgent
+
+    config_list = config_list_from_json(
+        env_or_file='OAI_CONFIG_LIST',
+    )
+
+    llm_config={"config_list": config_list}
+
+    # User Proxy Agent
+    user_proxy_agent = UserProxyAgent(
+        name = "User_Proxy_Agent",
+        code_execution_config={"work_dir": "coding", "use_docker": False},
+    )
+
+    # Assistant Agent
+    assistant_agent = AssistantAgent(
+        name = "Assistant_Agent",
+        llm_config=llm_config
+    )
+
+    user_proxy_agent.initiate_chat(assistant_agent, message="write a python code to add two numbers")
+    last_message = assistant_agent.chat_messages[user_proxy_agent][-1]["content"]
+    print(last_message)
+    
+    autogen_code = re.search(r"```(.*?)```", last_message, re.DOTALL).group(1)
+    print("autogen_code: ",autogen_code)
+    return autogen_code
 
 if __name__ == '__main__':
     app.run()
