@@ -10,7 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 @app.route('/')
 def index():
@@ -21,6 +21,7 @@ def generate():
     prompt = request.data.decode('utf-8')
     print(prompt)
     # print(request)
+    
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
