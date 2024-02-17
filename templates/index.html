@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Generation Form</title>
+</head>
+<body>
+    <h1>Code Generation Form</h1>
+    <div id="response"></div>
+    <script>
+        // Function to send JSON data to Flask backend
+        function generateCode() {
+            var data = {
+                "language": document.getElementById("language").value,
+                "function_template": document.getElementById("function_template").value,
+                "input_params": document.getElementById("input_params").value,
+                "output_format": document.getElementById("output_format").value,
+                "provider": document.getElementById("provider").value,
+                "schema": document.getElementById("schema").value,
+                "task": document.getElementById("task").value
+            };
+            fetch('/generate_code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' // Set Content-Type header to application/json
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("response").innerText = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+    <label for="language">Language:</label>
+    <input type="text" id="language" name="language" value="python"><br><br>
+    
+    <label for="function_template">Function Template:</label><br>
+    <textarea id="function_template" name="function_template" rows="10" cols="50">
+        "function studentPerformance(inputParams) {
+            // Write your code here
+            
+            return {
+                data: outputData,
+            }
+        }
+    </textarea><br><br>
+    
+    <label for="input_params">Input Params:</label><br>
+    <textarea id="input_params" name="input_params" rows="5" cols="50">{}</textarea><br><br>
+    
+    <label for="output_format">Output Format:</label><br>
+    <textarea id="output_format" name="output_format" rows="5" cols="50">
+        {
+            physics: { min:int, max:int, mean:float },
+            chemistry: { min:int, max:int, mean:float },
+            maths: { min:int, max:int, mean:float },
+        }
+    </textarea><br><br>
+    
+    <label for="provider">Provider:</label>
+    <input type="text" id="provider" name="provider" value="mongodb"><br><br>
+    
+    <label for="schema">Schema:</label><br>
+    <textarea id="schema" name="schema" rows="10" cols="50">
+        const studentSchema = {
+            name: { type: String, required: true },
+            age: { type: Number, required: true },
+            marks: {
+                physics: { type: Number, required: true },
+                chemistry: { type: Number, required: true },
+                maths: { type: Number, required: true },
+            },
+        };
+    </textarea><br><br>
+    
+    <label for="task">Task:</label><br>
+    <textarea id="task" name="task" rows="5" cols="50">
+        Write a function to generate a summary of student performance using mean, min and max marks in each subject.
+    </textarea><br><br>
+    
+    <button onclick="generateCode()">Generate Code</button>
+</body>
+</html>
