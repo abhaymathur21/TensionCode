@@ -18,4 +18,4 @@ assistant_agent = AssistantAgent(
     llm_config=llm_config
 )
 
-user_proxy_agent.initiate_chat(assistant_agent, message="execute git status")
+user_proxy_agent.initiate_chat(assistant_agent, message="write a python code to add two numbers")
