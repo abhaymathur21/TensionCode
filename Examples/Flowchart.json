@@ -1,0 +1,21 @@
+{
+  "flowchart": {
+    "start": {
+      "next": "check_condition"
+    },
+    "check_condition": {
+      "condition": "result == -1",
+      "true": "print_message_not_found",
+      "false": "print_message_found"
+    },
+    "print_message_not_found": {
+      "message": "Element not found",
+      "next": "end"
+    },
+    "print_message_found": {
+      "message": "Element found at index: result",
+      "next": "end"
+    },
+    "end": {}
+  }
+}

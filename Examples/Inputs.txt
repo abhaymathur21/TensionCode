@@ -1,0 +1,12 @@
+Schema:
+const studentSchema = {
+  name: { type: String, required: true },
+  age: { type: Number, required: true },
+  marks: {
+    physics: { type: Number, required: true },
+    chemistry: { type: Number, required: true },
+    maths: { type: Number, required: true },
+  },
+};
+
+function : Write a function to generate a summary of student performance using mean, min and max marks in each subject
