@@ -152,10 +152,7 @@ export default function Home() {
           </h2>
           <form
             className="grid grid-cols-[1fr_1fr_auto] items-center gap-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              section_3.current?.scrollIntoView({ behavior: "smooth" });
-            }}
+            onSubmit={(e) => e.preventDefault()}
           >
             <Select
               name="language"
@@ -208,9 +205,8 @@ export default function Home() {
               <ArrowUpIcon size={24} />
             </Button>
             <Button
-              type="submit"
               onClick={() =>
-                section_4.current?.scrollIntoView({ behavior: "smooth" })
+                section_3.current?.scrollIntoView({ behavior: "smooth" })
               }
             >
               <ArrowDownIcon size={24} />
@@ -337,7 +333,7 @@ export default function Home() {
             <div className="relative row-span-2">
               {
                 {
-                  json: (
+                  text: (
                     <>
                       <Textarea
                         placeholder="Database Schema"
