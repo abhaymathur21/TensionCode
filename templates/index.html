@@ -29,7 +29,7 @@
             })
             .then(response => response.text())
             .then(data => {
-                document.getElementById("response").innerText = data;
+                document.getElementById("response").innerText = JSON.stringify(JSON.parse(data), null, 2);
             })
             .catch(error => {
                 console.error('Error:', error);
