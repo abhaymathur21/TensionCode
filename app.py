@@ -2,33 +2,48 @@ from flask import Flask, render_template, request, jsonify
 import getpass
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.prompts import PromptTemplate
 import re
+from flask_cors import CORS
 
 if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = "AIzaSyDbzDwrQ3gi3kM-gA8XpmdXQWpRDG_xtEc"
-    
+
 llm = ChatGoogleGenerativeAI(model="gemini-pro")
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route('/')
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/generate_code', methods=['POST'])
+
+@app.route("/generate_code", methods=["POST"])
 async def generate_code():
-    
+
     data = request.get_json()
-    language = data.get('language', 'python')
-    function_template = data.get('function_template', "")
-    input_params = data.get('input_params', "{}")
-    output_format = data.get('output_format', "")
-    provider = data.get('provider', "mongodb")
-    schema = data.get('schema', "")
-    task = data.get('task', "")
-    
+    language = data.get("language", "python")
+    function_template = data.get("function_template", "")
+    input_params = data.get("input_params", "{}")
+    output_format = data.get("output_format", "")
+    provider = data.get("provider", "mongodb")
+    schema = data.get("schema", "")
+    task = data.get("task", "")
+
+    imput_data = {
+        "language": language,
+        "function_template": function_template,
+        "input_params": input_params,
+        "output_format": output_format,
+        "provider": provider,
+        "schema": schema,
+        "task": task,
+    }
+
     prompt = [
-    f"""
+        """
     You are a code generation system.
     Your job is to generate a complete function that performs the mentioned task.
     The function input is parsed as an JSON object
@@ -62,51 +77,66 @@ async def generate_code():
     Response:
     """
     ]
-    # print(prompt)
-    result = llm.invoke(prompt)
+
+    template = PromptTemplate(
+        template=prompt[0],
+        input_variables=[
+            "language",
+            "function_template",
+            "input_params",
+            "output_format",
+            "provider",
+            "schema",
+            "task",
+        ],
+    )
+
+    chain = template | llm
+
+    result = chain.invoke(imput_data)
     generated_code = result.content
     print(generated_code)
-    
+
     autogen_code = await autogen(generated_code)
-    
-    return jsonify({"generated_code": generated_code, "autogen_code":autogen_code})
+
+    return jsonify({"generated_code": generated_code, "autogen_code": autogen_code})
+
 
 async def autogen(generated_code):
     from autogen import config_list_from_json, UserProxyAgent, AssistantAgent
 
     config_list = config_list_from_json(
-        env_or_file='OAI_CONFIG_LIST',
+        env_or_file="OAI_CONFIG_LIST",
     )
 
-    llm_config={"config_list": config_list}
+    llm_config = {"config_list": config_list}
 
     # User Proxy Agent
     user_proxy_agent = UserProxyAgent(
-        name = "User_Proxy_Agent",
+        name="User_Proxy_Agent",
         code_execution_config={"work_dir": "coding", "use_docker": False},
         human_input_mode="NEVER",
         max_consecutive_auto_reply=5,
         is_termination_msg=lambda msg: "TERMINATE" in msg.get("content", ""),
     )
-    # system_message=""" 
-        
+    # system_message="""
+
     #     If the code is correct and runs successfully, respond with the final corrected code inside 3 single quotes for example, and after that leave a line and write the word 'SUCCESS'."""
-        
+
     # Assistant Agent
     assistant_agent = AssistantAgent(
-        name = "Assistant_Agent",
+        name="Assistant_Agent",
         llm_config=llm_config,
-        
     )
-        # is_termination_msg=lambda msg: "SUCCESS" in msg.get("content", ""),   
+    # is_termination_msg=lambda msg: "SUCCESS" in msg.get("content", ""),
 
-    prompt = f'''
+    prompt = f"""
     You are a debugger agent.
     Generate sample data appropriate to the code and then run, test and debug the given code. 
     
     Given code: {generated_code}
-    '''
-    
+    """
+
     user_proxy_agent.initiate_chat(assistant_agent, message=prompt)
     await user_proxy_agent.a_send(
         f"""Based on the results in above conversation, please provide the final corrected code between ``` and ```.
@@ -118,19 +148,25 @@ async def autogen(generated_code):
         request_reply=False,
         silent=True,
     )
-    response = await assistant_agent.a_generate_reply(assistant_agent.chat_messages[user_proxy_agent], user_proxy_agent)
-    await assistant_agent.a_send(response, user_proxy_agent, request_reply=False, silent=True)
+    response = await assistant_agent.a_generate_reply(
+        assistant_agent.chat_messages[user_proxy_agent], user_proxy_agent
+    )
+    await assistant_agent.a_send(
+        response, user_proxy_agent, request_reply=False, silent=True
+    )
 
     last_message = assistant_agent.chat_messages[user_proxy_agent][-1]["content"]
-    print("last_Message: ",last_message)
-    
-    
-    autogen_code = re.search(r"('''|```)(.*?)('''|```)", last_message, re.DOTALL).group(2)
+    print("last_Message: ", last_message)
+
+    autogen_code = re.search(
+        r"('''|```)(javascript|python)?(.*?)('''|```)", last_message, re.DOTALL
+    ).group(3)
     # start_index = last_message.find("```") + 3 # Adding 3 to exclude the triple quotes themselves
     # end_index = last_message.rfind("```")
     # autogen_code = last_message[start_index:end_index]
-    print("autogen_code: ",autogen_code)
+    print("autogen_code: ", autogen_code)
     return autogen_code
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)

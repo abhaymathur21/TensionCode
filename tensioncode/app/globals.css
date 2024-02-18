@@ -60,6 +60,8 @@
 
 ::-webkit-scrollbar {
   width: 0.25rem;
+  height: 0.25rem;
+  /* display: none; */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -69,4 +71,16 @@
 
 ::-webkit-scrollbar-track {
   background: hsl(var(--primary));
+}
+
+html {
+  overflow: none;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary));
+}
+
+pre::-webkit-scrollbar-track {
+  background: hsl(var(--secondary));
 }
