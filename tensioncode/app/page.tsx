@@ -22,9 +22,21 @@ import {
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { json } from "stream/consumers";
 
 export default function Home() {
-  const [formInput, setFormInput] = useState({
+  const [formInput, setFormInput] = useState<{
+    task: string;
+    language: string;
+    input_format: string;
+    output_format: string;
+    db_provider: string;
+    db_schema: string;
+    function_template: string;
+    schema_format: string;
+    image: Blob | undefined;
+    table: Blob | undefined;
+  }>({
     task: "Write a function to generate a summary of student performance using mean, min and max marks in each subject.",
     language: "javascript",
     input_format: "{}",
@@ -32,6 +44,9 @@ export default function Home() {
     db_provider: "mongodb",
     db_schema: "",
     function_template: "",
+    schema_format: "json",
+    image: undefined,
+    table: undefined,
   });
 
   const [genHistory, setGenHistory] = useState<string[]>([]);
@@ -42,6 +57,11 @@ export default function Home() {
   const section_3 = useRef<HTMLDivElement>(null);
   const section_4 = useRef<HTMLDivElement>(null);
   const section_5 = useRef<HTMLDivElement>(null);
+
+  const langToExt: Record<string, string> = {
+    python: "py",
+    javascript: "js",
+  };
 
   const handleFormInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -54,29 +74,35 @@ export default function Home() {
   ) => {
     e.preventDefault();
     console.log(formInput);
-    const body = {
-      task: formInput.task,
-      language: formInput.language,
-      input_params: formInput.input_format,
-      output_format: formInput.output_format,
-      provider: formInput.db_provider,
-      schema: formInput.db_schema,
-      function_template: formInput.function_template,
-    };
-    setLoading(true);
-    const res = await fetch("http://localhost:5000/generate_code", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    console.log(data);
-    if (data.autogen_code) {
-      setGenHistory((prev) => [...prev, data.autogen_code]);
+
+    const form_data = new FormData();
+    form_data.append("task", formInput.task);
+    form_data.append("language", formInput.language);
+    form_data.append("input_params", formInput.input_format);
+    form_data.append("output_format", formInput.output_format);
+    form_data.append("provider", formInput.db_provider);
+    form_data.append("schema", formInput.db_schema);
+    form_data.append("function_template", formInput.function_template);
+    form_data.append("schema_format", formInput.schema_format);
+    form_data.append("image", formInput.image! as Blob);
+    form_data.append("table", formInput.table! as Blob);
+
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:5000/generate_code", {
+        method: "POST",
+        body: form_data,
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.autogen_code) {
+        setGenHistory((prev) => [...prev, data.autogen_code]);
+      }
+    } catch (e) {
+      toast.error("Error generating function");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -167,9 +193,9 @@ export default function Home() {
                 </SelectGroup>
                 <SelectGroup className="mt-4">
                   <SelectLabel>Flatfile DB</SelectLabel>
-                  <SelectItem value="sqlite">SQLite</SelectItem>
                   <SelectItem value="json">JSON</SelectItem>
                   <SelectItem value="csv">CSV</SelectItem>
+                  <SelectItem value="xml">XML</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -200,6 +226,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-primary-foreground">
             Input and Output Format
           </h2>
+
           <form
             className="grid grid-cols-[1fr_1fr_auto] items-center gap-4"
             onSubmit={(e) => e.preventDefault()}
@@ -285,35 +312,87 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-primary-foreground">
             Database Schema
           </h2>
+          <Select
+            name="schema_format"
+            onValueChange={(value) => {
+              setFormInput((prev) => ({ ...prev, schema_format: value }));
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Schema Format" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="json">JSON/Plaintext</SelectItem>
+              <SelectItem value="image">Image</SelectItem>
+              {["csv", "json", "xml"].includes(formInput.db_provider) && (
+                <SelectItem value="table">Table</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+
           <form
             className="grid grid-cols-[1fr_auto] items-center gap-4"
             onSubmit={(e) => e.preventDefault()}
           >
             <div className="relative row-span-2">
-              <Textarea
-                placeholder="Database Schema"
-                name="db_schema"
-                onChange={handleFormInput}
-                className="h-64 font-mono"
-                value={formInput.db_schema}
-              />
-              <Button
-                className="absolute right-1 top-1 h-fit border border-primary p-2"
-                variant="ghost"
-                onClick={() => {
-                  try {
-                    const schema = JSON.parse(formInput.db_schema);
-                    setFormInput((prev) => ({
-                      ...prev,
-                      db_schema: JSON.stringify(schema, null, 2),
-                    }));
-                  } catch (e) {
-                    toast.error("Invalid JSON");
-                  }
-                }}
-              >
-                <CurlyBracesIcon size={12} />
-              </Button>
+              {
+                {
+                  json: (
+                    <>
+                      <Textarea
+                        placeholder="Database Schema"
+                        name="db_schema"
+                        onChange={handleFormInput}
+                        className="h-64 font-mono"
+                        value={formInput.db_schema}
+                      />
+                      <Button
+                        className="absolute right-1 top-1 h-fit border border-primary p-2"
+                        variant="ghost"
+                        onClick={() => {
+                          try {
+                            const schema = JSON.parse(formInput.db_schema);
+                            setFormInput((prev) => ({
+                              ...prev,
+                              db_schema: JSON.stringify(schema, null, 2),
+                            }));
+                          } catch (e) {
+                            toast.error("Invalid JSON");
+                          }
+                        }}
+                      >
+                        <CurlyBracesIcon size={12} />
+                      </Button>
+                    </>
+                  ),
+                  image: (
+                    <Input
+                      type="file"
+                      placeholder="Database Schema"
+                      name="image"
+                      onChange={(e) => {
+                        setFormInput((prev) => ({
+                          ...prev,
+                          image: e.target.files?.[0],
+                        }));
+                      }}
+                    />
+                  ),
+                  table: (
+                    <Input
+                      type="file"
+                      placeholder="Database Schema"
+                      name="table"
+                      onChange={(e) => {
+                        setFormInput((prev) => ({
+                          ...prev,
+                          table: e.target.files?.[0],
+                        }));
+                      }}
+                    />
+                  ),
+                }[formInput.schema_format]
+              }
             </div>
 
             <Button
@@ -365,13 +444,26 @@ export default function Home() {
             >
               <ArrowUpIcon size={24} />
             </Button>
-            <Button
-              className="h-full"
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              <ArrowRightIcon size={24} />
-            </Button>
+            {genHistory.length > 0 ? (
+              <Button
+                className="h-full"
+                onClick={() =>
+                  document
+                    .querySelector("main > section:last-child")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <ArrowDownIcon size={24} />
+              </Button>
+            ) : (
+              <Button
+                className="h-full"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                <ArrowRightIcon size={24} />
+              </Button>
+            )}
           </form>
         </div>
       </section>
@@ -401,7 +493,7 @@ export default function Home() {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
                     a.href = url;
-                    a.download = `function_${index + 1}.txt`;
+                    a.download = `function_${index + 1}.${langToExt[formInput.language]}`;
                     a.click();
                   }}
                 >
