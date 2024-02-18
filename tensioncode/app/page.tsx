@@ -17,6 +17,7 @@ import {
   ArrowUpIcon,
   CurlyBracesIcon,
   ClipboardIcon,
+  DownloadIcon,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -380,42 +381,68 @@ export default function Home() {
             key={index}
             className="grid h-screen snap-start place-items-center p-8"
           >
-            <div className="grid w-2/3 grid-cols-[1fr_auto_auto_auto] items-center  gap-2">
+            <div className="grid w-2/3 grid-cols-[1fr_auto] items-center  gap-2">
               <h2 className="text-2xl font-bold text-primary-foreground">
                 Generated Function {index + 1}
               </h2>
-              <Button onClick={handleSubmit} disabled={loading}>
-                <ArrowRightIcon size={24} />
-              </Button>
-              <Button
-                onClick={() => {
-                  document
-                    .querySelector(`main > section:nth-child(${index + 5})`)
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-              >
-                <ArrowUpIcon size={24} />
-              </Button>
-              <Button
-                onClick={() => {
-                  document
-                    .querySelector(`main > section:nth-child(${index + 7})`)
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-              >
-                <ArrowDownIcon size={24} />
-              </Button>
-
-              <pre className="relative col-span-4 max-h-96 overflow-y-auto rounded-lg bg-primary-foreground p-4 font-mono text-sm text-slate-900">
-                <code>{history}</code>
+              <div className="flex gap-4">
                 <Button
-                  className="sticky right-1 top-1 border border-primary p-2"
-                  variant="ghost"
-                  onClick={() => navigator.clipboard.writeText(history)}
+                  onClick={() => {
+                    navigator.clipboard.writeText(history);
+                  }}
                 >
                   <ClipboardIcon size={24} />
                 </Button>
+                <Button
+                  onClick={() => {
+                    const blob = new Blob([history], {
+                      type: "text/plain",
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `function_${index + 1}.txt`;
+                    a.click();
+                  }}
+                >
+                  <DownloadIcon size={24} />
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    document
+                      .querySelector(`main > section:nth-child(${index + 5})`)
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  <ArrowUpIcon size={24} />
+                </Button>
+                <Button
+                  onClick={() => {
+                    document
+                      .querySelector(`main > section:nth-child(${index + 7})`)
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  <ArrowDownIcon size={24} />
+                </Button>
+              </div>
+
+              <pre className="col-span-2 max-h-96 overflow-y-auto rounded-lg bg-primary-foreground p-4 font-mono text-sm text-slate-900">
+                <code>{history}</code>
               </pre>
+              <div className="col-span-2 flex gap-4">
+                <Input
+                  type="task"
+                  placeholder="Task"
+                  name="task"
+                  onChange={handleFormInput}
+                  value={formInput.task}
+                />
+                <Button onClick={handleSubmit} disabled={loading}>
+                  <ArrowRightIcon size={24} />
+                </Button>
+              </div>
             </div>
           </section>
         ))}

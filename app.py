@@ -23,14 +23,18 @@ def index():
 @app.route("/generate_code", methods=["POST"])
 async def generate_code():
 
-    data = request.get_json()
-    language = data.get("language", "python")
-    function_template = data.get("function_template", "")
-    input_params = data.get("input_params", "{}")
-    output_format = data.get("output_format", "")
-    provider = data.get("provider", "mongodb")
-    schema = data.get("schema", "")
-    task = data.get("task", "")
+    language = request.form["language"] if "language" in request.form else "python"
+    function_template = request.form.get("function_template", "")
+    input_params = request.form.get("input_params", "{}")
+    output_format = request.form.get("output_format", "")
+    provider = request.form["provider"] if "provider" in request.form else "mongodb"
+    schema = request.form.get("schema", "")
+    task = request.form.get("task", "")
+
+    if schema == "":
+        schema = None
+        image = request.files.get("image", None)
+        # Abhay here you can use the image to get the schema
 
     imput_data = {
         "language": language,
@@ -159,8 +163,8 @@ async def autogen(generated_code):
     print("last_Message: ", last_message)
 
     autogen_code = re.search(
-        r"('''|```)(javascript|python)?(.*?)('''|```)", last_message, re.DOTALL
-    ).group(3)
+        r"('''|```)?(.*?)('''|```)", last_message, re.DOTALL
+    ).group(2)
     # start_index = last_message.find("```") + 3 # Adding 3 to exclude the triple quotes themselves
     # end_index = last_message.rfind("```")
     # autogen_code = last_message[start_index:end_index]
