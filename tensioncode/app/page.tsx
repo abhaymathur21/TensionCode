@@ -44,7 +44,7 @@ export default function Home() {
     db_provider: "mongodb",
     db_schema: "",
     function_template: "",
-    schema_format: "json",
+    schema_format: "text",
     image: undefined,
     table: undefined,
   });
@@ -322,7 +322,7 @@ export default function Home() {
               <SelectValue placeholder="Schema Format" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="json">JSON/Plaintext</SelectItem>
+              <SelectItem value="text">plaintext</SelectItem>
               <SelectItem value="image">Image</SelectItem>
               {["csv", "json", "xml"].includes(formInput.db_provider) && (
                 <SelectItem value="table">Table</SelectItem>
