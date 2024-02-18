@@ -9,6 +9,43 @@ from pathlib import Path
 import google.generativeai as genai
 import pandas as pd
 import xml.etree.ElementTree as ET
+from openai import OpenAI
+import openai
+import json
+from langchain_core.output_parsers import StrOutputParser
+from langchain_openai import ChatOpenAI
+
+parser_model = ChatOpenAI(openai_api_key='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')
+
+# Set up OpenAI API credentials
+client = OpenAI(api_key="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")  # Replace with your actual OpenAI API key
+# Define the template code
+temp_code = """
+import React, { useCallback, useState } from "react";
+import Flowchart from "flowchart-react";
+import { ConnectionData, NodeData } from "flowchart-react/schema";
+
+const App = () => {
+  // ... (Your existing template code here)
+
+  return (
+    <Flowchart
+      showToolbar={["start-end", "operation", "decision"]}
+      onChange={(nodes, connections) => {
+        setNodes(nodes);
+        setConns(connections);
+      }}
+      onDoubleClick={handleCreateNode}
+      style={{ width: 800, height: 600 }}
+      nodes={nodes}
+      connections={conns}
+    />
+  );
+};
+
+export default App;
+"""
+
 
 
 
@@ -116,7 +153,7 @@ async def generate_code():
         Given the above dataframe data, I want to extract the schema in json text format, also give me the data types of the columns in the schema. Also i want to know the data types for each column in the schema. So for that we have to assume and classify accordingly, for example if a column is of type varchar then we have to assume it as string, if it is of type int then we have to assume it as integer, if it is of type date then we have to assume it as date, if it is of type time then we have to assume it as time, if it is of type datetime then we have to assume it as datetime, if it is of type timestamp then we have to assume it as timestamp, if it is of type year then we have to assume it as year, if it is of type text then we have to assume it as text, if it is of type longtext then we have to assume it as longtext, if it is of type mediumtext then we have to assume it as mediumtext, if it is of type tinytext then we have to assume it as tinytext.
         """
         
-        result = llm.invoke(prompt)
+        response = llm.invoke(prompt)
         print(response.content)
         schema=response.content
 
@@ -186,8 +223,40 @@ async def generate_code():
     print(generated_code)
 
     autogen_code = await autogen(generated_code)
+    
+    # parser for flowchart
+    parser_prompt = '''
+    This is the input code: {input_code}
 
-    return jsonify({"generated_code": generated_code, "autogen_code": autogen_code})
+    Use the above input code to generate a JSON text file that represents the flowchart of the code. The JSON text file should contain the flowchart in a structured format.
+    Use the following example only for reference to create the JSON text file for the input_code above:
+
+    '''
+    
+    template = PromptTemplate(template=prompt, input_variables=['input_code'])
+    
+    chain = template | parser_model | StrOutputParser()
+
+    parsed_autogen_code = chain.invoke({'input_code': autogen_code})
+    # print(output)
+    
+    # flowchart
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are a powerful flowchart generator. You can replace the data and provide me the code for flowchart generation. You have to provide me, I believe in you!"},
+                        {"role": "user", "content": f"This is the data:\n{parsed_autogen_code}\n{temp_code}"}
+                        ],
+        # prompt=prompt,
+        # max_tokens=500  # Adjust as needed
+    )
+    
+    # Check if the output is empty, if so, print the original temp_code
+    # print(response.choices[0].message.content )
+        #   if response['choices'] else temp_code)
+
+
+    return jsonify({"generated_code": generated_code, "autogen_code": autogen_code, "flowchart_code": response.choices[0].message.content})
 
 
 async def autogen(generated_code):
