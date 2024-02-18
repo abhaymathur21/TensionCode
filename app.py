@@ -225,6 +225,16 @@ async def generate_code():
     autogen_code = await autogen(generated_code)
     
     # parser for flowchart
+    
+    flowchart_prompt = f'''
+    {autogen_code}
+    Generate plant uml code for the code given above. The code should be in a structured format. There should be strictly nothing else in the output except the plant uml code.
+    '''
+    flow_template = PromptTemplate(template=flowchart_prompt, input_variables=['autogen_code'])
+    
+    flow_chain = flow_template | parser_model | StrOutputParser()
+    flow_code = flow_chain.invoke({'autogen_code': autogen_code})
+
     parser_prompt = '''
     This is the input code: {input_code}
 
@@ -233,7 +243,7 @@ async def generate_code():
 
     '''
     
-    template = PromptTemplate(template=prompt, input_variables=['input_code'])
+    template = PromptTemplate(template=parser_prompt, input_variables=['input_code'])
     
     chain = template | parser_model | StrOutputParser()
 
@@ -256,7 +266,7 @@ async def generate_code():
         #   if response['choices'] else temp_code)
 
 
-    return jsonify({"generated_code": generated_code, "autogen_code": autogen_code, "flowchart_code": response.choices[0].message.content})
+    return jsonify({"generated_code": generated_code, "autogen_code": autogen_code, "flowchart_code": response.choices[0].message.content, 'flow_code':flow_code})
 
 
 async def autogen(generated_code):
