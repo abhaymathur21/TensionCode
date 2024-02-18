@@ -8,7 +8,7 @@ from langchain.prompts import PromptTemplate
 
 from langchain_openai import ChatOpenAI
 
-model = ChatOpenAI(openai_api_key='sk-QYomHpgjxKOpIYwow0zjT3BlbkFJ1PkoPn6YvfTJrlqNFpqvv')
+model = ChatOpenAI(openai_api_key='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')
 # Set up OpenAI API credentials
 
 # Define the input code

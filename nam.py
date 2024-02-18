@@ -1,7 +1,7 @@
 from openai import OpenAI
 
 # Set up OpenAI API credentials
-client = OpenAI(api_key="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")  # Replace with your actual OpenAI API key
+client = OpenAI(api_key="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")  # Replace with your actual OpenAI API key
 
 # Define the input code
 code_input = """
