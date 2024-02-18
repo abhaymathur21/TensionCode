@@ -48,21 +48,3 @@ chain = template | model | StrOutputParser()
 
 output = chain.invoke({'input_code': code_input})
 print(output)
-
-# # Generate the JSON text file
-# def generate_json_file(code):
-#     # Create a LangChain instance
-#     lc = LangChain()
-
-#     # Parse the code using LangChain
-#     parsed_code = lc.parse(code)
-
-#     # Convert the parsed code to JSON
-#     json_code = json.dumps(parsed_code, indent=4)
-
-#     # Write the JSON code to a file
-#     with open('output.json', 'w') as file:
-#         file.write(json_code)
-
-# # Call the function with the input code
-# generate_json_file(input_code)
