@@ -1,24 +1,29 @@
-from flask import Flask, render_template, request, jsonify
 import getpass
-import os
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
-import re
-from flask_cors import CORS
-from pathlib import Path
-import google.generativeai as genai
-import pandas as pd
-import xml.etree.ElementTree as ET
-from openai import OpenAI
-import openai
 import json
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
+import os
+import re
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
-parser_model = ChatOpenAI(openai_api_key='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')
+import google.generativeai as genai
+import openai
+import pandas as pd
+from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
+from langchain.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
+from openai import OpenAI
+
+parser_model = ChatOpenAI(
+    openai_api_key="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"
+)
 
 # Set up OpenAI API credentials
-client = OpenAI(api_key="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")  # Replace with your actual OpenAI API key
+client = OpenAI(
+    api_key="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"
+)  # Replace with your actual OpenAI API key
 # Define the template code
 temp_code = """
 import React, { useCallback, useState } from "react";
@@ -47,43 +52,37 @@ export default App;
 """
 
 
-
-
 if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = "AIzaSyDbzDwrQ3gi3kM-gA8XpmdXQWpRDG_xtEc"
-    
+
 genai.configure(api_key="AIzaSyB7fSw9N5yT6Rhhz1y6HMUC_bsjGp2YwkQ")
 
 # Set up the model
 generation_config = {
-  "temperature": 0.4,
-  "top_p": 1,
-  "top_k": 32,
-  "max_output_tokens": 4096,
+    "temperature": 0.4,
+    "top_p": 1,
+    "top_k": 32,
+    "max_output_tokens": 4096,
 }
 
 safety_settings = [
-  {
-    "category": "HARM_CATEGORY_HARASSMENT",
-    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-  },
-  {
-    "category": "HARM_CATEGORY_HATE_SPEECH",
-    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-  },
-  {
-    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-  },
-  {
-    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-  },
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+    },
 ]
 
-vision = genai.GenerativeModel(model_name="gemini-1.0-pro-vision-latest",
-                              generation_config=generation_config,
-                              safety_settings=safety_settings)
+vision = genai.GenerativeModel(
+    model_name="gemini-1.0-pro-vision-latest",
+    generation_config=generation_config,
+    safety_settings=safety_settings,
+)
 
 llm = ChatGoogleGenerativeAI(model="gemini-pro")
 
@@ -109,30 +108,27 @@ async def generate_code():
     schema_format = request.form.get("schema_format", "")
 
     if schema_format == "image":
-        
+
         image = request.files.get("image", None)
         # Abhay here you can use the image to get the schema
-        
+
         # # Validate that an image is present
         # if not (img := Path("ER-Model.png")).exists():
         #     raise FileNotFoundError(f"Could not find image: {img}")
-        
+
         image_parts = [
-            {
-                "mime_type": "image/png",
-                "data": image.read()
-            },
+            {"mime_type": "image/png", "data": image.read()},
         ]
         prompt_parts = [
-        image_parts[0],
-        "\n i have this ER diagram and I want to extract the schema in json text format, also give me the data types of the columns in the schema. Also i want to know the data types for each column in the schema. So for that we have to assume and classify accordingly, for example if a column is of type varchar then we have to assume it as string, if it is of type int then we have to assume it as integer, if it is of type date then we have to assume it as date, if it is of type time then we have to assume it as time, if it is of type datetime then we have to assume it as datetime, if it is of type timestamp then we have to assume it as timestamp, if it is of type year then we have to assume it as year, if it is of type text then we have to assume it as text, if it is of type longtext then we have to assume it as longtext, if it is of type mediumtext then we have to assume it as mediumtext, if it is of type tinytext then we have to assume it as tinytext.",
+            image_parts[0],
+            "\n i have this ER diagram and I want to extract the schema in json text format, also give me the data types of the columns in the schema. Also i want to know the data types for each column in the schema. So for that we have to assume and classify accordingly, for example if a column is of type varchar then we have to assume it as string, if it is of type int then we have to assume it as integer, if it is of type date then we have to assume it as date, if it is of type time then we have to assume it as time, if it is of type datetime then we have to assume it as datetime, if it is of type timestamp then we have to assume it as timestamp, if it is of type year then we have to assume it as year, if it is of type text then we have to assume it as text, if it is of type longtext then we have to assume it as longtext, if it is of type mediumtext then we have to assume it as mediumtext, if it is of type tinytext then we have to assume it as tinytext.",
         ]
 
         response = vision.generate_content(prompt_parts)
 
         print(response.text)
-        schema=response.text
-            
+        schema = response.text
+
     elif schema_format == "table":
         table = request.files.get("table", None)
         filename = table.filename
@@ -147,15 +143,15 @@ async def generate_code():
             for item in root:
                 data.append(item.attrib)
             df = pd.DataFrame(data)
-            
+
         prompt = f""" 
         This is the data:\n{df.columns}\n{df.head()}
         Given the above dataframe data, I want to extract the schema in json text format, also give me the data types of the columns in the schema. Also i want to know the data types for each column in the schema. So for that we have to assume and classify accordingly, for example if a column is of type varchar then we have to assume it as string, if it is of type int then we have to assume it as integer, if it is of type date then we have to assume it as date, if it is of type time then we have to assume it as time, if it is of type datetime then we have to assume it as datetime, if it is of type timestamp then we have to assume it as timestamp, if it is of type year then we have to assume it as year, if it is of type text then we have to assume it as text, if it is of type longtext then we have to assume it as longtext, if it is of type mediumtext then we have to assume it as mediumtext, if it is of type tinytext then we have to assume it as tinytext.
         """
-        
+
         response = llm.invoke(prompt)
         print(response.content)
-        schema=response.content
+        schema = response.content
 
     input_data = {
         "language": language,
@@ -168,7 +164,7 @@ async def generate_code():
     }
 
     prompt = [
-    """
+        """
     You are a code generation system.
     Your job is to generate a complete function that performs the mentioned task.
     The function input is parsed as an JSON object
@@ -223,54 +219,69 @@ async def generate_code():
     print(generated_code)
 
     autogen_code = await autogen(generated_code)
-    
+
     # parser for flowchart
-    
-    flowchart_prompt = f'''
+
+    flowchart_prompt = f"""
     {autogen_code}
     Generate plant uml code for the code given above. The code should be in a structured format. There should be strictly nothing else in the output except the plant uml code.
-    '''
-    flow_template = PromptTemplate(template=flowchart_prompt, input_variables=['autogen_code'])
-    
-    flow_chain = flow_template | parser_model | StrOutputParser()
-    flow_code = flow_chain.invoke({'autogen_code': autogen_code})
+    """
+    flow_template = PromptTemplate(
+        template=flowchart_prompt, input_variables=["autogen_code"]
+    )
 
-    parser_prompt = '''
+    flow_chain = flow_template | parser_model | StrOutputParser()
+    flow_code = flow_chain.invoke({"autogen_code": autogen_code})
+
+    parser_prompt = """
     This is the input code: {input_code}
 
     Use the above input code to generate a JSON text file that represents the flowchart of the code. The JSON text file should contain the flowchart in a structured format.
     Use the following example only for reference to create the JSON text file for the input_code above:
 
-    '''
-    
-    template = PromptTemplate(template=parser_prompt, input_variables=['input_code'])
-    
+    """
+
+    template = PromptTemplate(template=parser_prompt, input_variables=["input_code"])
+
     chain = template | parser_model | StrOutputParser()
 
-    parsed_autogen_code = chain.invoke({'input_code': autogen_code})
+    parsed_autogen_code = chain.invoke({"input_code": autogen_code})
     # print(output)
-    
+
     # flowchart
 
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": "You are a powerful flowchart generator. You can replace the data and provide me the code for flowchart generation. You have to provide me, I believe in you!"},
-                        {"role": "user", "content": f"This is the data:\n{parsed_autogen_code}\n{temp_code}"}
-                        ],
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a powerful flowchart generator. You can replace the data and provide me the code for flowchart generation. You have to provide me, I believe in you!",
+            },
+            {
+                "role": "user",
+                "content": f"This is the data:\n{parsed_autogen_code}\n{temp_code}",
+            },
+        ],
         # prompt=prompt,
         # max_tokens=500  # Adjust as needed
     )
-    
+
     # Check if the output is empty, if so, print the original temp_code
     # print(response.choices[0].message.content )
-        #   if response['choices'] else temp_code)
+    #   if response['choices'] else temp_code)
 
-
-    return jsonify({"generated_code": generated_code, "autogen_code": autogen_code, "flowchart_code": response.choices[0].message.content, 'flow_code':flow_code})
+    return jsonify(
+        {
+            "generated_code": generated_code,
+            "autogen_code": autogen_code,
+            "flowchart_code": response.choices[0].message.content,
+            "flow_code": flow_code,
+        }
+    )
 
 
 async def autogen(generated_code):
-    from autogen import config_list_from_json, UserProxyAgent, AssistantAgent
+    from autogen import AssistantAgent, UserProxyAgent, config_list_from_json
 
     config_list = config_list_from_json(
         env_or_file="OAI_CONFIG_LIST",
