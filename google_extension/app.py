@@ -10,7 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 @app.route('/')
 def index():

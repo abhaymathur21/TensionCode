@@ -27,7 +27,31 @@ export function activate(context: vscode.ExtensionContext) {
     statusBarItem.text = 'TensionCode';
     statusBarItem.show();
 
-    new TestView(context);
+    context.subscriptions.push(
+        vscode.commands.registerCommand('tensioncode.start', () => {
+            const panel = vscode.window.createWebviewPanel(
+                'webview',
+                'TenionCode Webview',
+                vscode.ViewColumn.One,
+                {
+                    enableScripts: true,
+                }
+            );
+
+            panel.webview.html = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Document</title>
+            </head>
+            <body style="height:100vh;">
+                <iframe src="http://localhost:3000" width="100%" height="100%" />
+            </body>
+            </html>`;
+        })
+    );
 
     context.subscriptions.push(promptInputBox);
     context.subscriptions.push(statusBarItem);

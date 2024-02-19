@@ -18,6 +18,10 @@
             {
                 "command": "tensioncode.testCommand",
                 "title": "Test Command"
+            },
+            {
+                "command": "tensioncode.start",
+                "title": "TensionCode: Start"
             }
         ],
         "viewsContainers": {
@@ -40,9 +44,9 @@
         "menus": {
             "view/title": [
                 {
-                    "command": "tensioncode.testCommand",
+                    "command": "tensioncode.start",
                     "when": "view == tensioncode-chat",
-                    "group": "inline"
+                    "group": "navigation"
                 }
             ]
         }
