@@ -28,7 +28,7 @@ export default function RootLayout({
         <Image
           src={BG}
           alt="Background"
-          className="fixed inset-0 z-[-1] h-full w-auto object-cover blur-[10px] filter"
+          className="fixed inset-0 z-[-1] h-full w-full object-cover blur-[10px] filter"
           width={1920}
           height={1080}
         />
