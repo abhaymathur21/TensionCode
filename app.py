@@ -221,13 +221,71 @@ async def generate_code():
     autogen_code = await autogen(generated_code)
 
     # parser for flowchart
-    parser_prompt = """
+    # parser_prompt = """
+    # This is the input code: {input_code}
+
+    # Use the above input code to generate a JSON text file that represents the flowchart of the code. The JSON text file should contain the flowchart in a structured format.
+    # Use the following example only for reference to create the JSON text file for the input_code above:
+
+    # """
+    
+    parser_prompt = '''
     This is the input code: {input_code}
 
-    Use the above input code to generate a JSON text file that represents the flowchart of the code. The JSON text file should contain the flowchart in a structured format.
-    Use the following example only for reference to create the JSON text file for the input_code above:
+    Write a detailed flowchart code for each step in the input_code given above. Give the output flowchart code between ``` and ```. Use the following flowchart codes as example output flowchart codes:
 
-    """
+    Example 1:
+    ```
+    st0=>start: start a_pyflow_test
+    op1=>operation: do something
+    cond2=>condition: Yes or No?
+    io3=>inputoutput: output: something...
+    e5=>end: end a_pyflow_test
+    sub4=>subroutine: A Subroutine
+
+    st0->op1
+    op1->cond2
+    cond2->
+    cond2->
+    cond2(yes)->io3
+    io3->e5
+    cond2(no)->sub4
+    sub4(right)->op1
+    ```
+    Example 2:
+    ```
+    st3=>start: start foo
+    io5=>inputoutput: input: a, b
+    cond9=>condition: if a
+    sub13=>subroutine: print('a')
+    io34=>inputoutput: output:  (a + b)
+    e32=>end: end function return
+    cond18=>operation: print('b') while  i in range(3)
+
+    st3->io5
+    io5->cond9
+    cond9(yes)->sub13
+    sub13->io34
+    io34->e32
+    cond9(no)->cond18
+    cond18->io34
+    ```
+    Example 3:
+    ```
+    st3=>start: start g
+    io5=>inputoutput: input: self
+    sub8=>subroutine: print('g')
+    sub10=>subroutine: f(self)
+    e12=>end: end g
+
+    st3->io5
+    io5->sub8
+    sub8->sub10
+    sub10->e12
+    ```
+
+    '''
+
 
     template = PromptTemplate(template=parser_prompt, input_variables=["input_code"])
 
@@ -238,22 +296,22 @@ async def generate_code():
 
     # flowchart
 
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a powerful flowchart generator. You can replace the data and provide me the code for flowchart generation. You have to provide me, I believe in you!",
-            },
-            {
-                "role": "user",
-                "content": f"This is the data:\n{parsed_autogen_code}\n{temp_code}",
-            },
-        ],
-        # prompt=prompt,
-        # prompt=prompt,
-        # max_tokens=500  # Adjust as needed
-    )
+    # response = client.chat.completions.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {
+    #             "role": "system",
+    #             "content": "You are a powerful flowchart generator. You can replace the data and provide me the code for flowchart generation. You have to provide me, I believe in you!",
+    #         },
+    #         {
+    #             "role": "user",
+    #             "content": f"This is the data:\n{parsed_autogen_code}\n{temp_code}",
+    #         },
+    #     ],
+    #     # prompt=prompt,
+    #     # prompt=prompt,
+    #     # max_tokens=500  # Adjust as needed
+    # )
 
     # Check if the output is empty, if so, print the original temp_code
     # print(response.choices[0].message.content )
@@ -263,7 +321,8 @@ async def generate_code():
         {
             "generated_code": generated_code,
             "autogen_code": autogen_code,
-            "flowchart_code": response.choices[0].message.content,
+            # "flowchart_code": response.choices[0].message.content,
+            "flowchart_code": parsed_autogen_code,
         }
     )
 
