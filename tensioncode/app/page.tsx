@@ -1,5 +1,6 @@
 "use client";
-// import Flowchart from "@/components/Flowchart";
+import CodeDisplay from "@/components/CodeDisplay";
+import Flowchart from "@/components/Flowchart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -51,8 +52,9 @@ export default function Home() {
 
   const [genHistory, setGenHistory] = useState<
     {
-      type: "code" | "flowchart";
-      content: string;
+      orignal: string;
+      evaluated: string;
+      flowchart: string;
     }[]
   >([]);
   const [loading, setLoading] = useState(false);
@@ -62,11 +64,6 @@ export default function Home() {
   const section_3 = useRef<HTMLDivElement>(null);
   const section_4 = useRef<HTMLDivElement>(null);
   const section_5 = useRef<HTMLDivElement>(null);
-
-  const langToExt: Record<string, string> = {
-    python: "py",
-    javascript: "js",
-  };
 
   const handleFormInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -100,22 +97,16 @@ export default function Home() {
       });
       const data = await res.json();
       console.log(data);
-      if (data.autogen_code) {
-        setGenHistory((prev) => [
-          ...prev,
-          { content: data.generated_code, type: "code" },
-        ]);
-        setGenHistory((prev) => [
-          ...prev,
-          { content: data.autogen_code, type: "code" },
-        ]);
-      }
-      // if (data.parsed_autogen_code) {
-      //   setGenHistory((prev) => [
-      //     ...prev,
-      //     { content: data.parsed_autogen_code, type: "flowchart" },
-      //   ]);
-      // }
+      setGenHistory((prev) => [
+        ...prev,
+        {
+          orignal: data?.generated_code ? data.generated_code : "",
+          evaluated: data?.autogen_code ? data.autogen_code : "",
+          flowchart: data?.flowchart_code
+            ? data.flowchart_code.replace(/(```)?(.*)(```)?/g, "$2")
+            : "",
+        },
+      ]);
     } catch (e) {
       toast.error("Error generating function");
     } finally {
@@ -479,89 +470,21 @@ export default function Home() {
         </div>
       </section>
       {genHistory.length > 0 &&
-        genHistory.map((history, index) =>
-          history.type === "code" ? (
-            <section
-              key={index}
-              className="grid h-screen snap-start place-items-center p-8"
-            >
-              <div className="grid w-2/3 grid-cols-[1fr_auto] items-center  gap-2">
-                <h2 className="text-2xl font-bold text-primary-foreground">
-                  Generated {history.type === "code" ? "Code" : "Flowchart"}{" "}
-                  {index + 1}
-                </h2>
-                <div className="flex gap-4">
-                  {history.type == "code" && (
-                    <Button
-                      onClick={() => {
-                        navigator.clipboard.writeText(history.content);
-                      }}
-                    >
-                      <ClipboardIcon size={24} />
-                    </Button>
-                  )}
-                  <Button
-                    onClick={() => {
-                      const blob = new Blob([history.content], {
-                        type:
-                          history.type === "code" ? "text/plain" : "image/svg",
-                      });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `function_${index + 1}.${history.type === "code" ? langToExt[formInput.language] : "svg"}`;
-                      a.click();
-                    }}
-                  >
-                    <DownloadIcon size={24} />
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      document
-                        .querySelector(`main > section:nth-child(${index + 5})`)
-                        ?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                  >
-                    <ArrowUpIcon size={24} />
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      document
-                        .querySelector(`main > section:nth-child(${index + 7})`)
-                        ?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                  >
-                    <ArrowDownIcon size={24} />
-                  </Button>
-                </div>
-
-                {
-                  {
-                    code: (
-                      <pre className="col-span-2 max-h-96 overflow-y-auto whitespace-pre-wrap rounded-lg bg-primary-foreground p-4 font-mono text-sm text-slate-900">
-                        <code>{history.content}</code>
-                      </pre>
-                    ),
-                    // flowchart: <Flowchart data={JSON.parse(history.content)} />,
-                  }[history.type]
-                }
-                <div className="col-span-2 flex gap-4">
-                  <Input
-                    type="task"
-                    placeholder="Task"
-                    name="task"
-                    onChange={handleFormInput}
-                    value={formInput.task}
-                  />
-                  <Button onClick={handleSubmit} disabled={loading}>
-                    <ArrowRightIcon size={24} />
-                  </Button>
-                </div>
-              </div>
-            </section>
-          ) : null,
-        )}
+        genHistory.map((history, index) => (
+          <section
+            key={index}
+            className="grid h-screen snap-start place-items-center p-8"
+          >
+            <CodeDisplay
+              history={history}
+              formInput={formInput}
+              index={index}
+              loading={loading}
+              handleFormInput={handleFormInput}
+              handleSubmit={handleSubmit}
+            />
+          </section>
+        ))}
       {loading && (
         <section className="grid h-screen snap-start place-items-center p-8">
           <div className="grid w-2/3 place-items-center items-center gap-2">

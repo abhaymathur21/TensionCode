@@ -228,11 +228,14 @@ async def generate_code():
     # Use the following example only for reference to create the JSON text file for the input_code above:
 
     # """
-    
-    parser_prompt = '''
+
+    parser_prompt = """
     This is the input code: {input_code}
 
-    Write a detailed flowchart code for each step in the input_code given above. Give the output flowchart code between ``` and ```. Use the following flowchart codes as example output flowchart codes:
+    Write a detailed flowchart code for each step in the input_code given above. Give the output flowchart code between ``` and ```. 
+    Ensure that the flowchart code is in a structured format and is easy to understand.
+    Ensure that the flowchart is in landscape mode and has small number of steps.
+    Use the following flowchart codes as example output flowchart codes:
 
     Example 1:
     ```
@@ -284,8 +287,7 @@ async def generate_code():
     sub10->e12
     ```
 
-    '''
-
+    """
 
     template = PromptTemplate(template=parser_prompt, input_variables=["input_code"])
 

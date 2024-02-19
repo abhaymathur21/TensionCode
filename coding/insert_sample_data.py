@@ -1,15 +1,19 @@
 # filename: insert_sample_data.py
 import pymongo
 
-# Connect to the MongoDB instance
-client = pymongo.MongoClient("mongodb://localhost:27017")
-db = client.school
+# MongoDB connection
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client["mydatabase"]
+collection = db["students"]
 
-# Insert some sample data
-students = db.students
-data = [
-    {"name": "Alice", "marks": {"physics": 80, "maths": 75, "chemistry": 85}},
-    {"name": "Bob", "marks": {"physics": 70, "maths": 78, "chemistry": 72}},
-    {"name": "Charlie", "marks": {"physics": 90, "maths": 85, "chemistry": 88}},
+# Sample data
+sample_data = [
+    { "_id": 1, "marks": { "physics": 85, "chemistry": 90, "maths": 95 }},
+    { "_id": 2, "marks": { "physics": 75, "chemistry": 80, "maths": 85 }},
+    { "_id": 3, "marks": { "physics": 90, "chemistry": 85, "maths": 80 }},
 ]
-students.insert_many(data)
+
+# Insert sample data into the collection
+collection.insert_many(sample_data)
+
+print("Sample data inserted into the 'students' collection.")

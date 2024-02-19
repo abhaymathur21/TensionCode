@@ -27,11 +27,10 @@ export default function RootLayout({
       <body className={cn`font-san overflow-clip bg-slate-900/60`}>
         <Image
           src={BG}
-          layout="fill"
-          objectFit="cover"
-          objectPosition="bottom"
           alt="Background"
-          className="fixed inset-0 z-[-1] blur-[10px] filter"
+          className="fixed inset-0 z-[-1] h-full w-auto object-cover blur-[10px] filter"
+          width={1920}
+          height={1080}
         />
         <Image
           src="/logo.svg"
@@ -43,6 +42,14 @@ export default function RootLayout({
         />
         {children}
         <Toaster />
+        {/* <script
+          src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"
+          defer
+        ></script>
+        <script
+          src="http://flowchart.js.org/flowchart-latest.js"
+          defer
+        ></script> */}
       </body>
     </html>
   );
