@@ -1,0 +1,227 @@
+[
+  {
+    "id": 1,
+    "name": "Smartphone X23",
+    "price": 699.99,
+    "description": "The latest flagship smartphone with a stunning display and advanced camera features.",
+    "category": "Electronics",
+    "brand": "Brand A",
+    "stock": 500
+  },
+  {
+    "id": 2,
+    "name": "Laptop ProBook 15",
+    "price": 1199.99,
+    "description": "Powerful laptop for professionals with a sleek design and long-lasting battery.",
+    "category": "Electronics",
+    "brand": "Brand B",
+    "stock": 200
+  },
+  {
+    "id": 3,
+    "name": "Cotton T-Shirt",
+    "price": 19.99,
+    "description": "Comfortable and stylish cotton t-shirt available in various colors and sizes.",
+    "category": "Apparel",
+    "brand": "Brand C",
+    "stock": 1000
+  },
+  {
+    "id": 4,
+    "name": "Leather Wallet",
+    "price": 39.99,
+    "description": "Handcrafted leather wallet with multiple card slots and RFID protection.",
+    "category": "Accessories",
+    "brand": "Brand D",
+    "stock": 300
+  },
+  {
+    "id": 5,
+    "name": "Wireless Earbuds",
+    "price": 79.99,
+    "description": "High-quality wireless earbuds with noise-cancellation and long battery life.",
+    "category": "Electronics",
+    "brand": "Brand E",
+    "stock": 600
+  },
+  {
+    "id": 6,
+    "name": "Fitness Tracker Watch",
+    "price": 49.99,
+    "description": "Stay fit and active with this feature-rich fitness tracker watch.",
+    "category": "Electronics",
+    "brand": "Brand F",
+    "stock": 250
+  },
+  {
+    "id": 7,
+    "name": "Organic Coffee Beans",
+    "price": 12.99,
+    "description": "Premium organic coffee beans sourced from sustainable farms.",
+    "category": "Food & Beverages",
+    "brand": "Brand G",
+    "stock": 800
+  },
+  {
+    "id": 8,
+    "name": "Bluetooth Speaker",
+    "price": 59.99,
+    "description": "Portable Bluetooth speaker with 360-degree sound and water resistance.",
+    "category": "Electronics",
+    "brand": "Brand H",
+    "stock": 400
+  },
+  {
+    "id": 9,
+    "name": "Scented Soy Candle",
+    "price": 24.99,
+    "description": "Hand-poured scented soy candle with a soothing fragrance.",
+    "category": "Home & Living",
+    "brand": "Brand I",
+    "stock": 350
+  },
+  {
+    "id": 10,
+    "name": "Men's Leather Jacket",
+    "price": 199.99,
+    "description": "Stylish and durable men's leather jacket for all seasons.",
+    "category": "Apparel",
+    "brand": "Brand J",
+    "stock": 150
+  },
+  {
+    "id": 11,
+    "name": "Digital Camera",
+    "price": 499.99,
+    "description": "High-resolution digital camera with advanced image stabilization.",
+    "category": "Electronics",
+    "brand": "Brand K",
+    "stock": 180
+  },
+  {
+    "id": 12,
+    "name": "Reusable Water Bottle",
+    "price": 14.99,
+    "description": "Eco-friendly reusable water bottle made from stainless steel.",
+    "category": "Accessories",
+    "brand": "Brand L",
+    "stock": 900
+  },
+  {
+    "id": 13,
+    "name": "Wireless Gaming Mouse",
+    "price": 79.99,
+    "description": "Precision gaming mouse with customizable RGB lighting.",
+    "category": "Electronics",
+    "brand": "Brand M",
+    "stock": 220
+  },
+  {
+    "id": 14,
+    "name": "Women's Running Shoes",
+    "price": 89.99,
+    "description": "Comfortable and supportive running shoes for women.",
+    "category": "Footwear",
+    "brand": "Brand N",
+    "stock": 300
+  },
+  {
+    "id": 15,
+    "name": "Portable Power Bank",
+    "price": 39.99,
+    "description": "Compact and high-capacity power bank for charging on-the-go.",
+    "category": "Electronics",
+    "brand": "Brand O",
+    "stock": 500
+  },
+  {
+    "id": 16,
+    "name": "Stainless Steel Kitchen Set",
+    "price": 129.99,
+    "description": "Complete kitchen set made from durable stainless steel.",
+    "category": "Home & Kitchen",
+    "brand": "Brand P",
+    "stock": 100
+  },
+  {
+    "id": 17,
+    "name": "Gaming Headset",
+    "price": 69.99,
+    "description": "Immersive gaming headset with noise-cancellation and surround sound.",
+    "category": "Electronics",
+    "brand": "Brand Q",
+    "stock": 250
+  },
+  {
+    "id": 18,
+    "name": "Eco-Friendly Bamboo Toothbrush",
+    "price": 9.99,
+    "description": "Biodegradable and sustainable toothbrush made from bamboo.",
+    "category": "Personal Care",
+    "brand": "Brand R",
+    "stock": 1200
+  },
+  {
+    "id": 19,
+    "name": "Professional Chef's Knife",
+    "price": 89.99,
+    "description": "Premium-quality chef's knife for culinary experts.",
+    "category": "Home & Kitchen",
+    "brand": "Brand S",
+    "stock": 150
+  },
+  {
+    "id": 20,
+    "name": "HD Smart TV",
+    "price": 799.99,
+    "description": "Smart TV with high-definition display and streaming capabilities.",
+    "category": "Electronics",
+    "brand": "Brand T",
+    "stock": 80
+  },
+  {
+    "id": 21,
+    "name": "Hiking Backpack",
+    "price": 79.99,
+    "description": "Durable and spacious hiking backpack with multiple compartments.",
+    "category": "Outdoor Gear",
+    "brand": "Brand U",
+    "stock": 400
+  },
+  {
+    "id": 22,
+    "name": "Noise-Canceling Headphones",
+    "price": 149.99,
+    "description": "Premium noise-canceling headphones for a distraction-free experience.",
+    "category": "Electronics",
+    "brand": "Brand V",
+    "stock": 300
+  },
+  {
+    "id": 23,
+    "name": "Scented Bath Bombs",
+    "price": 14.99,
+    "description": "Relaxing scented bath bombs for a spa-like experience at home.",
+    "category": "Personal Care",
+    "brand": "Brand W",
+    "stock": 700
+  },
+  {
+    "id": 24,
+    "name": "Automatic Espresso Machine",
+    "price": 399.99,
+    "description": "Semi-automatic espresso machine for coffee enthusiasts.",
+    "category": "Appliances",
+    "brand": "Brand X",
+    "stock": 120
+  },
+  {
+    "id": 25,
+    "name": "Yoga Mat",
+    "price": 29.99,
+    "description": "Non-slip and eco-friendly yoga mat for a comfortable workout.",
+    "category": "Fitness & Sports",
+    "brand": "Brand Y",
+    "stock": 200
+  }
+]
