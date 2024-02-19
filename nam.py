@@ -1,7 +1,9 @@
 from openai import OpenAI
 
 # Set up OpenAI API credentials
-client = OpenAI(api_key="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")  # Replace with your actual OpenAI API key
+client = OpenAI(
+    api_key="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"
+)  # Replace with your actual OpenAI API key
 
 # Define the input code
 code_input = """
@@ -67,13 +69,17 @@ Finally, print the code with the updated data.
 # Make the API call
 response = client.chat.completions.create(
     model="gpt-3.5-turbo",
-    messages=[{"role": "system", "content": "You are a powerful flowchart generator. You can replace the data and provide me the code for flowchart generation. You have to provide me, I believe in you!"},
-                    {"role": "user", "content": f"This is the data:\n{code_input}\n{temp_code}"}
-                    ],
+    messages=[
+        {
+            "role": "system",
+            "content": "You are a powerful flowchart generator. You can replace the data and provide me the code for flowchart generation. You have to provide me, I believe in you!",
+        },
+        {"role": "user", "content": f"This is the data:\n{code_input}\n{temp_code}"},
+    ],
     # prompt=prompt,
     # max_tokens=500  # Adjust as needed
 )
 
 # Check if the output is empty, if so, print the original temp_code
-print(response.choices[0].message.content )
-    #   if response['choices'] else temp_code)
+print(response.choices[0].message.content)
+#   if response['choices'] else temp_code)

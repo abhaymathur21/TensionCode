@@ -1,8 +1,8 @@
-# filename: generate_sample_data.py
+# filename: using_mongodb_atlas.py
 import pymongo
 
-# Connect to MongoDB
-client = pymongo.MongoClient("mongodb://localhost:27017")
+# Connect to MongoDB Atlas (Replace <username>, <password>, and <cluster_url> with your MongoDB Atlas credentials)
+client = pymongo.MongoClient("mongodb+srv://<username>:<password>@<cluster_url>/test?retryWrites=true&w=majority")
 db = client.school
 collection = db.students
 
@@ -16,7 +16,7 @@ data = [
 
 collection.insert_many(data)
 
-# Function to test
+# Test the function
 def studentPerformance(inputParams):
     threshold = inputParams["threshold"]
 
