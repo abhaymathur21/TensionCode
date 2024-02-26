@@ -2,13 +2,14 @@ import openai
 import json
 from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import PromptTemplate
-
-
-
-
 from langchain_openai import ChatOpenAI
+import os
+from dotenv import load_dotenv
 
-model = ChatOpenAI(openai_api_key='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')
+load_dotenv('.env')
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+model = ChatOpenAI(openai_api_key=OPENAI_API_KEY)
 # Set up OpenAI API credentials
 
 # Define the input code

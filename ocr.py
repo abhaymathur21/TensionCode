@@ -1,7 +1,12 @@
 from pathlib import Path
 import google.generativeai as genai
+import os
+from dotenv import load_dotenv
 
-genai.configure(api_key="AIzaSyB7fSw9N5yT6Rhhz1y6HMUC_bsjGp2YwkQ")
+load_dotenv('.env')
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+genai.configure(api_key=GOOGLE_API_KEY)
 
 # Set up the model
 generation_config = {

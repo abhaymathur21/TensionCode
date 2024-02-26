@@ -9,4 +9,23 @@ const studentSchema = {
   },
 };
 
-function : Write a function to generate a summary of student performance using mean, min and max marks in each subject
+Output Format:
+{
+  "physics": {
+    "min": "int",
+    "max": "int",
+    "mean": "float"
+  },
+  "chemistry": {
+    "min": "int",
+    "max": "int",
+    "mean": "float"
+  },
+  "maths": {
+    "min": "int",
+    "max": "int",
+    "mean": "float"
+  }
+}
+
+task : Write a function to generate a summary of student performance using mean, min and max marks in each subject

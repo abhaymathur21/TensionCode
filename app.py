@@ -15,14 +15,20 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
 
 parser_model = ChatOpenAI(
-    openai_api_key="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"
+    openai_api_key=OPENAI_API_KEY
 )
 
 # Set up OpenAI API credentials
 client = OpenAI(
-    api_key="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"
+    api_key=OPENAI_API_KEY
 )  # Replace with your actual OpenAI API key
 # Define the template code
 temp_code = """
@@ -53,9 +59,9 @@ export default App;
 
 
 if "GOOGLE_API_KEY" not in os.environ:
-    os.environ["GOOGLE_API_KEY"] = "AIzaSyDbzDwrQ3gi3kM-gA8XpmdXQWpRDG_xtEc"
+    os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
 
-genai.configure(api_key="AIzaSyB7fSw9N5yT6Rhhz1y6HMUC_bsjGp2YwkQ")
+genai.configure(api_key=GOOGLE_API_KEY)
 
 # Set up the model
 generation_config = {

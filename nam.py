@@ -1,8 +1,13 @@
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Set up OpenAI API credentials
 client = OpenAI(
-    api_key="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"
+    api_key=OPENAI_API_KEY
 )  # Replace with your actual OpenAI API key
 
 # Define the input code

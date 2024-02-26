@@ -5,12 +5,13 @@ from dotenv import load_dotenv
 
 # === Flask LLM Integration===
 
-load_dotenv()
+load_dotenv('.env')
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 
-client = OpenAI(api_key="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")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 @app.route('/')
 def index():
